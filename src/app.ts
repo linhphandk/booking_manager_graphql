@@ -4,6 +4,8 @@ import {
   Config} from 'apollo-server-core';
 import Koa from 'koa';
 import http from 'http';
+import cors from '@koa/cors';
+
 
 /**
  *
@@ -20,11 +22,13 @@ async function startApolloServer({typeDefs, resolvers}:Config) {
 
   await server.start();
   const app = new Koa();
+
+  app.use(cors());
   server.applyMiddleware({app});
   httpServer.on('request', app.callback());
   await new Promise<void>(
-      (resolve) => httpServer.listen({port: 4000}, resolve));
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+      (resolve) => httpServer.listen({host: '0.0.0.0', port: 4000}, resolve));
+  console.log(`🚀 Server ready at http://0.0.0.0:4000${server.graphqlPath}`);
   return {server, app};
 }
 
